@@ -1,64 +1,40 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import "./featuredProperties.css";
 
 const FeaturedProperties = () => {
+  const [topRated, setTopRated] = useState([]);
+
+  useEffect(() => {
+    const fetchTopRated = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/hotels/topRated');
+        setTopRated(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchTopRated();
+  }, []);
+
   return (
     <div className="fp">
-      <div className="fpItem">
-        <img
-          src="images/hotel_1.webp"
-          alt=""
-          className="fpImg"
-        />
-        <span className="fpName"><a href="./hotels/0" target="_blank">Aparthotel Stare Miasto</a></span>
-        <span className="fpCity">Madrid</span>
-        <span className="fpPrice">Starting from $120</span>
-        <div className="fpRating">
-          <button>8.9</button>
-          <span>Excellent</span>
+      {topRated.map((property) => (
+        <div className="fpItem" key={property._id}>
+          <img
+            src={property.photos[0]} // Assuming the first photo is the main one
+            alt={property.name}
+            className="fpImg"
+          />
+          <span className="fpName"><a href={`./hotels/${property._id}`} target="_blank">{property.name}</a></span>
+          <span className="fpCity">{property.city}</span>
+          <span className="fpPrice">Starting from ${property.cheapestPrice}</span>
+          <div className="fpRating">
+            <button>{property.rating}</button>
+            <span>{property.rating >= 9 ? 'Exceptional' : property.rating >= 8 ? 'Excellent' : 'Good'}</span>
+          </div>
         </div>
-      </div>
-      <div className="fpItem">
-        <img
-          src="images/hotel_2.jpg"
-          alt=""
-          className="fpImg"
-        />
-        <span className="fpName"><a href="./hotels/0" target="_blank">Comfort Suites Airport</a></span>
-        <span className="fpCity">Austin</span>
-        <span className="fpPrice">Starting from $140</span>
-        <div className="fpRating">
-          <button>9.3</button>
-          <span>Exceptional</span>
-        </div>
-      </div>
-      <div className="fpItem">
-        <img
-          src="images/hotel_3.jpg"
-          alt=""
-          className="fpImg"
-        />
-        <span className="fpName"><a href="./hotels/0" target="_blank">Four Seasons Hotel</a></span>
-        <span className="fpCity">Lisbon</span>
-        <span className="fpPrice">Starting from $99</span>
-        <div className="fpRating">
-          <button>8.8</button>
-          <span>Excellent</span>
-        </div>
-      </div>
-      <div className="fpItem">
-        <img
-          src="images/hotel_4.jpg"
-          alt=""
-          className="fpImg"
-        />
-        <span className="fpName"><a href="./hotels/0" target="_blank">Hilton Garden Inn</a></span>
-        <span className="fpCity">Berlin</span>
-        <span className="fpPrice">Starting from $105</span>
-        <div className="fpRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };
